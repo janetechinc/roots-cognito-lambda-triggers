@@ -1,32 +1,39 @@
 {
-    "name": "replaced-by-user-input",
-    "description": "replaced-by-user-input",
-    "version": "0.0.1",
-    "private": true,
-    "devDependencies": {
-        "adm-zip": "^0.5.10",
-        "jest": "^29.2.1",
-        "typescript": "^4.9.4"
-    },
-    "scripts": {
-        "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
-        "build": "tsc && npm run zip",
-        "zip": "node zip-lambdas.js"
-    },
-    "jest": {
-        "testMatch": [
-            "**/__tests__/**/*.[jt]s?(x)",
-            "**/?(*.)+(spec|test).[jt]s?(x)",
-            "**/__tests__/**/*.mjs?(x)",
-            "**/?(*.)+(spec|test).mjs?(x)"
-        ],
-        "moduleFileExtensions": [
-            "mjs",
-            "js"
-        ]
-    },
-    "dependencies": {
-        "@types/aws-lambda": "^8.10.110",
-        "axios": "^1.2.6"
-    }
+  "name": "janer-handlers",
+  "description": "janer-handlers",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "esbuild": "^0.17.5",
+    "jest": "^29.2.1"
+  },
+  "scripts": {
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "build": "npm run clean && npm run make:dist && npm run compile:migration-lambda && npm run compile:post-confirmation-lambda && npm run compile:pre-signup-lambda && npm run zip",
+    "clean": "rm -rf dist",
+    "make:dist": "mkdir -p dist/migration-lambda && mkdir -p dist/post-confirmation-lambda && mkdir -p dist/pre-signup-lambda",
+    "compile:migration-lambda": "npm run make:dist && esbuild examples/javascript/src/migration-lambda/index.mjs --platform=node --target=es2020 --bundle --minify --outfile=dist/migration-lambda/index.js",
+    "compile:post-confirmation-lambda": "npm run make:dist && esbuild examples/javascript/src/post-confirmation-lambda/index.mjs --platform=node --target=es2020 --bundle --minify --outfile=dist/post-confirmation-lambda/index.js",
+    "compile:pre-signup-lambda": "npm run make:dist && esbuild examples/javascript/src/pre-signup-lambda/index.mjs --platform=node --target=es2020 --bundle --minify --outfile=dist/pre-signup-lambda/index.js",
+    "zip:migration-lambda": "cd dist/migration-lambda && zip -r ../migrateUserHandler.zip .",
+    "zip:post-confirmation-lambda": "cd dist/post-confirmation-lambda && zip -r ../postConfirmationHandler.zip .",
+    "zip:pre-signup-lambda": "cd dist/pre-signup-lambda && zip -r ../preSignUpHandler.zip .",
+    "zip": "npm run zip:migration-lambda && npm run zip:post-confirmation-lambda && npm run zip:pre-signup-lambda"
+  },
+  "jest": {
+    "testMatch": [
+      "**/__tests__/**/*.[jt]s?(x)",
+      "**/?(*.)+(spec|test).[jt]s?(x)",
+      "**/__tests__/**/*.mjs?(x)",
+      "**/?(*.)+(spec|test).mjs?(x)"
+    ],
+    "moduleFileExtensions": [
+      "mjs",
+      "js"
+    ]
+  },
+  "dependencies": {
+    "axios": "^1.2.6"
+  }
 }

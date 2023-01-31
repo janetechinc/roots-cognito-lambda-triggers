@@ -1,7 +1,6 @@
-import { mapUserAttributes } from '../lib/utils';
-import Jane from '../lib/jane-service';
-import { PreSignUpTriggerHandler } from 'aws-lambda';
-import apiService from '../lib/api-service';
+import { mapUserAttributes } from '../lib/utils.mjs';
+import Jane from '../lib/jane-service.mjs';
+import apiService from '../lib/api-service.mjs';
 
 /**
  * Possible trigger sources:
@@ -15,7 +14,7 @@ import apiService from '../lib/api-service';
  */
 const ADMIN_CREATE_USER = 'PreSignUp_AdminCreateUser';
 
-export const handler: PreSignUpTriggerHandler = async (event) => {
+export const handler = async (event) => {
   const token = await apiService.authenticateClient();
 
   console.log(event);

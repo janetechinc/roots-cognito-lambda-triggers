@@ -1,4 +1,4 @@
-import { mapUserAttributes } from './utils'
+import { mapUserAttributes } from './utils.mjs'
 
 describe('#mapUserAttributes', () => {
   test('it excludes any blacklisted fields', () => {

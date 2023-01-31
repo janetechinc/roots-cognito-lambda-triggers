@@ -1,10 +1,10 @@
-import apiService, { Response } from './api-service'
+import apiService from './api-service.mjs'
 
 const COGNITO_API = '/roots/store_operations_api/v1/cognito'
 
 /** ----- HELPERS ----- */
 
-const buildErrorMessage = (message: string, response: Response) => {
+const buildErrorMessage = (message, response) => {
   return `${message} ${JSON.stringify({
     status: response.statusCode,
     message: response.statusMessage,
@@ -13,27 +13,7 @@ const buildErrorMessage = (message: string, response: Response) => {
 
 /** ----- CREATE USER ----- */
 
-export interface UserData {
-  email: string
-  birth_date?: Date
-  first_name?: string
-  last_name?: string
-  phone?: string
-  user_attributes?: {
-    [key: string]: any // eslint-disable-line @typescript-eslint/no-explicit-any
-  }
-}
-
-interface CreateUserData extends UserData {
-  pool_id: string
-  external_id: string
-  app_client_id: string
-}
-
-const createUser = async (
-  data: CreateUserData,
-  token: string
-): Promise<{ success: boolean; errorMessage?: string }> => {
+const createUser = async (data, token) => {
   const response = await apiService.post(`${COGNITO_API}/create_user`, data, token)
 
   return {
@@ -44,12 +24,7 @@ const createUser = async (
 
 /** ----- USER EXISTS ----- */
 
-interface UserExistsData {
-  email: string
-  app_client_id: string
-}
-
-const userExists = async (data: UserExistsData, token: string): Promise<boolean> => {
+const userExists = async (data, token) => {
   const response = await apiService.post(`${COGNITO_API}/user_exists`, data, token)
 
   switch (response.statusCode) {
@@ -66,18 +41,7 @@ const userExists = async (data: UserExistsData, token: string): Promise<boolean>
 
 /** ----- CAN USER RESET PASSWORD ----- */
 
-interface UserCanResetPasswordData {
-  email: string
-  app_client_id: string
-}
-
-const userCanResetPassword = async (
-  data: UserCanResetPasswordData,
-  token: string
-): Promise<{
-  valid: boolean
-  errorMessage: string
-}> => {
+const userCanResetPassword = async (data, token) => {
   const response = await apiService.post(
     `${COGNITO_API}/user_can_reset_password`,
     data,
@@ -110,18 +74,8 @@ const userCanResetPassword = async (
 
 /** ----- VERIFY CREDENTIALS ----- */
 
-interface VerifyCredentialsData {
-  email: string
-  password: string
-}
 
-const verifyCredentials = async (
-  data: VerifyCredentialsData,
-  token: string
-): Promise<{
-  valid: boolean
-  errorMessage: string
-}> => {
+const verifyCredentials = async (data, token) => {
   const response = await apiService.post(
     `${COGNITO_API}/verify_credentials`,
     data,
@@ -152,17 +106,8 @@ const verifyCredentials = async (
 
 /** ----- VALIDATE USER ----- */
 
-interface ValidateUserData extends UserData {
-  pool_id: string
-}
 
-const validateUser = async (
-  data: ValidateUserData,
-  token: string
-): Promise<{
-  valid: boolean
-  errorMessage: string
-}> => {
+const validateUser = async (data, token) => {
   const response = await apiService.post(`${COGNITO_API}/validate_user`, data, token)
 
   const result = {
@@ -186,16 +131,7 @@ const validateUser = async (
 
 /** ----- GET COGNITO APP CLIENT ----- */
 
-interface AppClient {
-  id: number
-  operator_id: number
-  pool_id: string
-  region: string
-  app_client_id: string
-  auto_confirm_email: boolean
-}
-
-const getAppClient = async (appClientId: string, token: string): Promise<AppClient | null> => {
+const getAppClient = async (appClientId, token) => {
   const response = await apiService.get(
     `${COGNITO_API}/app_clients/${appClientId}`,
     token
@@ -203,7 +139,7 @@ const getAppClient = async (appClientId: string, token: string): Promise<AppClie
   if (response.statusCode === 404) {
     return null
   }
-  return response.body as AppClient
+  return response.body
 }
 
 

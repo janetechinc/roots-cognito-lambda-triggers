@@ -1,6 +1,5 @@
-import { UserMigrationTriggerEvent, UserMigrationTriggerHandler } from 'aws-lambda';
-import Jane from '../lib/jane-service';
-import apiService from '../lib/api-service';
+import Jane from '../lib/jane-service.mjs';
+import apiService from '../lib/api-service.mjs';
 
 const AUTH_TRIGGER = 'UserMigration_Authentication';
 const FORGOT_PASSWORD_TRIGGER = 'UserMigration_ForgotPassword';
@@ -8,7 +7,7 @@ const EMAIL_VERIFIED = 'true';
 const CONFIRMED_STATUS = 'CONFIRMED';
 const SUPPRESS_ACTION = 'SUPPRESS';
 
-const authHandler = async (event: UserMigrationTriggerEvent, token: string): Promise<UserMigrationTriggerEvent> => {
+const authHandler = async (event, token) => {
   const userExists = await Jane.userExists({
     email: event.userName,
     app_client_id: event.callerContext.clientId,
@@ -37,7 +36,7 @@ const authHandler = async (event: UserMigrationTriggerEvent, token: string): Pro
   return event;
 };
 
-const forgotPasswordHandler = async (event: UserMigrationTriggerEvent, token: string): Promise<UserMigrationTriggerEvent> => {
+const forgotPasswordHandler = async (event, token) => {
   const { valid, errorMessage } = await Jane.userCanResetPassword({
     email: event.userName,
     app_client_id: event.callerContext.clientId,
@@ -56,7 +55,7 @@ const forgotPasswordHandler = async (event: UserMigrationTriggerEvent, token: st
   return event;
 };
 
-export const handler: UserMigrationTriggerHandler = async (event) => {
+export const handler = async (event) => {
   const token = await apiService.authenticateClient();
 
   const sanitizedEvent = {

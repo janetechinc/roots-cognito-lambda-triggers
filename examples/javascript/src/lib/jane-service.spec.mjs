@@ -1,5 +1,6 @@
-import Jane from './jane-service'
-import apiService from './api-service'
+import Jane from './jane-service.mjs'
+import apiService from './api-service.mjs'
+import { jest } from '@jest/globals'
 
 describe('jane service', () => {
   describe('#createUser', () => {

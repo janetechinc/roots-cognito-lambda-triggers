@@ -1,2 +1,4 @@
 node_modules
 jane-cognito-trigger-lambdas
+.envrc
+dist
