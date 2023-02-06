@@ -1,7 +1,6 @@
 {
-  "name": "janer-handlers",
-  "description": "janer-handlers",
-  "version": "0.0.1",
+  "name": "jane-handlers",
+  "description": "jane-handlers",
   "private": true,
   "type": "module",
   "devDependencies": {

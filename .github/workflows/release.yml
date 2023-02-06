@@ -1,0 +1,25 @@
+name: release
+on:
+  push:
+    branches:
+      - master
+jobs:
+  release:
+    name: release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+          cache: npm
+      - name: install packages
+        run: npm ci
+      - name: test
+        run: npm test
+      - name: build and zip lambdas
+        run: npm run build
+      - name: semantic release
+        run: npx semantic-release
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
