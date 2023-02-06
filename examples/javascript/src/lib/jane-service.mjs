@@ -22,6 +22,25 @@ const createUser = async (data, token) => {
   }
 }
 
+// /** ----- ENSURE EXTERNAL USER ----- */
+// export interface ExternalUserData {
+//   email: string,
+//   external_id: string,
+//   pool_id: string,
+//   user_attributes?: {
+//     [key: string]: any // eslint-disable-line @typescript-eslint/no-explicit-any
+//   }
+// }
+
+const ensureExternalUserExists = async (data) => {
+  const response = await apiService.post(`${COGNITO_API}/ensure_external_user_exists`, data)
+
+  return {
+    success: response.statusCode === 200,
+    errorMessage: response.statusMessage,
+  }
+}
+
 /** ----- USER EXISTS ----- */
 
 const userExists = async (data, token) => {
@@ -149,6 +168,7 @@ export default {
   createUser,
   getAppClient,
   userExists,
+  ensureExternalUserExists,
   verifyCredentials,
   validateUser
 }
