@@ -20,8 +20,20 @@ export const handler = async (event) => {
   console.log(event);
 
   if (event.triggerSource === ADMIN_CREATE_USER) {
-    console.log(`Trigger source matches "${ADMIN_CREATE_USER}", returning.`);
-    return event;
+    const { success, errorMessage } = await Jane.ensureExternalUserExists({
+      pool_id: event.userPoolId,
+      external_id: event.userName,
+      email: userData.email,
+      user_attributes: userData.user_attributes,
+    })
+
+    if (!success) {
+      throw new Error(`ensureExternalUserExists was not successful: ${errorMessage}`)
+    } else {
+      console.log('ensureExternalUserExists successful')
+    }
+
+    return event
   }
 
   const email = event.request.userAttributes.email;

@@ -248,6 +248,48 @@ describe('jane service', () => {
     })
   })
 
+  describe('#ensureExternalUserExists', () => {
+    test('returns valid when the status code is 200', async () => {
+      jest.spyOn(apiService, 'post').mockImplementationOnce(() => {
+        return new Promise((resolve) => resolve({ statusCode: 200 }))
+      })
+
+      const { success } = await Jane.ensureExternalUserExists({
+        email: 'test@test.com',
+        external_id: 'test-external-user-id',
+        pool_id: 'test-pool-id',
+        user_attributes: {
+          test_attribute: 'test-value'
+        }
+      })
+
+      expect(success).toBe(true)
+    })
+
+    test('returns invalid with an error message when the status code is 4xx', async () => {
+      jest.spyOn(apiService, 'post').mockImplementationOnce(() => {
+        return new Promise((resolve) =>
+          resolve({
+            statusCode: 404,
+            statusMessage: 'Not Found'
+          })
+        )
+      })
+
+      const { success, errorMessage } = await Jane.ensureExternalUserExists({
+        email: 'test@test.com',
+        external_id: 'test-external-user-id',
+        pool_id: 'test-pool-id',
+        user_attributes: {
+          test_attribute: 'test-value'
+        }
+      })
+
+      expect(success).toBe(false)
+      expect(errorMessage).toEqual('Not Found')
+    })
+  })
+
   describe('#getAppClient', () => {
     const exampleAppClient = {
       id: 12,
