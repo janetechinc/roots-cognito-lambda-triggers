@@ -26,3 +26,14 @@ The files will be compiled under `dist` directory:
 ```bash
 npm test
 ```
+
+## Configuration
+
+Set the following environment variables:
+
+```bash
+export JANE_CLIENT_ID="<provided by partner success>"
+export JANE_CLIENT_SECRET="<provided by partner success>"
+# optional, defaults to the following
+export JANE_API_URL="https://api.iheartjane.com"
+```
