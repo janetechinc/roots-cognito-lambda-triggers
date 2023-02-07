@@ -2,15 +2,16 @@ import { request } from './http.mjs'
 import { URL } from "url";
 
 const headers = { 'Content-Type': 'application/json' }
+const defaultHost = "https://api.iheartjane.com"
 
 const authenticateClient = async () => {
-  const clientId = process.env.CLIENT_ID || ''
-  const clientSecret = process.env.CLIENT_SECRET || ''
-  const janeApiHost = process.env.JANE_API_HOST
+  const clientId = process.env.JANE_CLIENT_ID || ''
+  const clientSecret = process.env.JANE_CLIENT_SECRET || ''
+  const apiUrl = process.env.JANE_API_URL
 
   const resp = await request({
     method: 'post',
-    url: `${janeApiHost}/oauth/token`,
+    url: `${apiUrl}/oauth/token`,
     grant_type: 'client_credentials'
   }, {
     auth: {
@@ -23,14 +24,13 @@ const authenticateClient = async () => {
 }
 
 const makeRequest = async (options) => {
+  const apiUrl = process.env.JANE_API_URL
 
-  const host = process.env.API_HOST
-
-  if (!host) {
-    throw Error('No API_HOST configured')
+  if (!apiUrl) {
+    throw Error('No JANE_API_URL configured')
   }
 
-  const url = new URL(options.path, host);
+  const url = new URL(options.path, apiUrl);
 
   try {
     const response = await request({
