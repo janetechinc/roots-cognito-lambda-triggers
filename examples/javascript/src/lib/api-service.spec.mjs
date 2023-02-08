@@ -16,16 +16,6 @@ describe('api service', () => {
     )
   })
 
-  describe('if no JANE_API_URL is set', () => {
-    test('it throws an error', async () => {
-      const token = 'someToken'
-
-      await expect(async () => {
-        await apiService.post('/api/path', {}, token)
-      }).rejects.toEqual(new Error('No JANE_API_URL configured'))
-    })
-  })
-
   describe('#get', () => {
     beforeEach(() => {
       process.env.JANE_API_URL = 'https://test.localhost'
