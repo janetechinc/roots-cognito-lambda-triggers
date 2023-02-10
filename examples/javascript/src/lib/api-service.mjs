@@ -10,6 +10,8 @@ const authenticateClient = async () => {
   const apiUrl = process.env.JANE_API_URL || defaultHost
 
   const resp = await request({
+    // Prevent exceptions when requests have status code different from 2xx
+    validateStatus: false,
     method: 'post',
     url: `${apiUrl}/oauth/token`,
     data: {
