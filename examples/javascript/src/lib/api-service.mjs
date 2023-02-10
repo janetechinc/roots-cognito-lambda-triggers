@@ -7,13 +7,14 @@ const defaultHost = "https://api.iheartjane.com"
 const authenticateClient = async () => {
   const clientId = process.env.JANE_CLIENT_ID || ''
   const clientSecret = process.env.JANE_CLIENT_SECRET || ''
-  const apiUrl = process.env.JANE_API_URL
+  const apiUrl = process.env.JANE_API_URL || defaultHost
 
   const resp = await request({
     method: 'post',
     url: `${apiUrl}/oauth/token`,
-    grant_type: 'client_credentials'
-  }, {
+    data: {
+      grant_type: 'client_credentials',
+    },
     auth: {
       username: clientId,
       password: clientSecret
@@ -24,7 +25,7 @@ const authenticateClient = async () => {
 }
 
 const makeRequest = async (options) => {
-  const apiUrl = process.env.JANE_API_URL
+  const apiUrl = process.env.JANE_API_URL || defaultHost
 
   if (!apiUrl) {
     throw Error('No JANE_API_URL configured')
