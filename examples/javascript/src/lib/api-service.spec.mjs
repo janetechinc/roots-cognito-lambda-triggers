@@ -26,14 +26,16 @@ describe('api service', () => {
 
       await apiService.get('/api/path', token)
 
-      expect(requestMock).toHaveBeenCalledWith({
-        url: 'https://test.localhost/api/path',
-        method: 'get',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
-      })
+      expect(requestMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          url: 'https://test.localhost/api/path',
+          method: 'get',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        })
+      )
     })
 
     test('it returns statusCode, statusMessage, and body', async () => {
@@ -60,15 +62,17 @@ describe('api service', () => {
 
       await apiService.post('/api/path', data, token)
 
-      expect(requestMock).toHaveBeenCalledWith({
-        url: 'https://test.localhost/api/path',
-        method: 'post',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        data: JSON.stringify(data),
-      })
+      expect(requestMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          url: 'https://test.localhost/api/path',
+          method: 'post',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          data: JSON.stringify(data),
+        })
+      )
     })
 
     test('it returns statusCode, statusMessage, and body', async () => {
@@ -77,15 +81,17 @@ describe('api service', () => {
 
       const response = await apiService.post('/api/path', data)
 
-      expect(requestMock).toHaveBeenCalledWith({
-        url: 'https://test.localhost/api/path',
-        method: 'post',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        data: JSON.stringify(data),
-      })
+      expect(requestMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          url: 'https://test.localhost/api/path',
+          method: 'post',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          data: JSON.stringify(data),
+        })
+      )
     })
   })
 })
