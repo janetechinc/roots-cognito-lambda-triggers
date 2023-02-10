@@ -4,14 +4,18 @@ import { URL } from "url";
 const headers = { 'Content-Type': 'application/json' }
 const defaultHost = "https://api.iheartjane.com"
 
+function validStatus(status) {
+  return (status >= 200 && status <= 299) ||
+    (status >= 400 || status <= 404);
+}
+
 const authenticateClient = async () => {
   const clientId = process.env.JANE_CLIENT_ID || ''
   const clientSecret = process.env.JANE_CLIENT_SECRET || ''
   const apiUrl = process.env.JANE_API_URL || defaultHost
 
   const resp = await request({
-    // Prevent exceptions when requests have status code different from 2xx
-    validateStatus: false,
+    validateStatus: validStatus,
     method: 'post',
     url: `${apiUrl}/oauth/token`,
     data: {
@@ -29,14 +33,11 @@ const authenticateClient = async () => {
 const makeRequest = async (options) => {
   const apiUrl = process.env.JANE_API_URL || defaultHost
 
-  if (!apiUrl) {
-    throw Error('No JANE_API_URL configured')
-  }
-
   const url = new URL(options.path, apiUrl);
 
   try {
     const response = await request({
+      validateStatus: validStatus,
       url: url.toString(),
       method: options.method || 'get',
       headers: {...headers, 'Authorization': `Bearer ${options.token}`},
