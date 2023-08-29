@@ -158,15 +158,33 @@ describe('jane service', () => {
   describe('#verifyCredentials', () => {
     test('returns valid when the status code is 200', async () => {
       jest.spyOn(apiService, 'post').mockImplementationOnce(() => {
-        return new Promise((resolve) => resolve({ statusCode: 200 }))
+        return new Promise((resolve) =>
+          resolve({
+            statusCode: 200,
+            body: {
+              user: {
+               
+                email: "omar@email.com",
+                nickname: "omar816",
+                phone: "1112224444",
+                first_name: "Omar",
+                last_name: "Scher",
+                name: "Omar Scher",
+                birth_date: "",
+                created_at: "2022-06-28T16:28:21.412Z",
+              },
+            },
+          })
+        );
       })
 
-      const { valid } = await Jane.verifyCredentials({
+      const { valid, user } = await Jane.verifyCredentials({
         email: 'test@test.com',
         password: 'password',
       })
 
       expect(valid).toBe(true)
+      expect(user).toBeDefined()
     })
 
     test('returns invalid with an error message when the status code is 401', async () => {
@@ -174,13 +192,14 @@ describe('jane service', () => {
         return new Promise((resolve) => resolve({ statusCode: 401 }))
       })
 
-      const { valid, errorMessage } = await Jane.verifyCredentials({
+      const { valid, errorMessage, user } = await Jane.verifyCredentials({
         email: 'test@test.com',
         password: 'password',
       })
 
       expect(valid).toBe(false)
       expect(errorMessage).toBe('Invalid password')
+      expect(user).not.toBeDefined();
     })
 
     test('returns invalid with an error message when the status code not 200, 401 or 404', async () => {
@@ -193,7 +212,7 @@ describe('jane service', () => {
         )
       })
 
-      const { valid, errorMessage } = await Jane.verifyCredentials({
+      const { valid, errorMessage, user } = await Jane.verifyCredentials({
         email: 'test@test.com',
         password: 'password',
       })
@@ -202,6 +221,7 @@ describe('jane service', () => {
       expect(errorMessage).toBe(
         'Error verifying user {"status":500,"message":"Something went wrong"}'
       )
+      expect(user).not.toBeDefined();
     })
   })
 
