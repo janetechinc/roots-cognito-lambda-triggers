@@ -104,6 +104,7 @@ const verifyCredentials = async (data, token) => {
   const result = {
     valid: false,
     errorMessage: '',
+    user: response.body?.user
   }
 
   switch (response.statusCode) {
