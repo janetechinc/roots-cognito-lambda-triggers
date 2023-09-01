@@ -24,7 +24,6 @@ const authHandler = async (event, token) => {
     {
       email: event.userName,
       password: event.request.password,
-      user: response.body?.user,
     },
     token
   );
