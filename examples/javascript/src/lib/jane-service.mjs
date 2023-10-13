@@ -124,6 +124,36 @@ const verifyCredentials = async (data, token) => {
   return result
 }
 
+/** ----- GET SSO USER ATTRIBUTES ----- */
+
+const verifySSOUser = async (data, token) => {
+  const response = await apiService.post(
+    `${COGNITO_API}/verify_sso_user`,
+    data,
+    token
+  )
+
+  const result = {
+    errorMessage: "",
+    user: response.body?.user,
+  }
+
+  switch (response.statusCode) {
+    case 200:
+      break
+    case 404:
+      result.errorMessage = "User not found"
+      break
+    default:
+      result.errorMessage = buildErrorMessage(
+        "Error verifying SSO user",
+        response
+      )
+  }
+
+  return result
+}
+
 /** ----- VALIDATE USER ----- */
 
 
@@ -171,5 +201,6 @@ export default {
   userExists,
   ensureExternalUserExists,
   verifyCredentials,
+  verifySSOUser,
   validateUser
 }
