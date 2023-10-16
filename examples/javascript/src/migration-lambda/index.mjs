@@ -1,3 +1,4 @@
+import { addAreaCodeToPhone } from '../lib/utils.mjs';
 import Jane from "../lib/jane-service.mjs";
 import apiService from "../lib/api-service.mjs";
 
@@ -95,16 +96,4 @@ export const handler = async (event) => {
   }
 
   return event;
-};
-
-const addAreaCodeToPhone = (phone) => {
-  let partial = phone.startsWith("+") ? phone.substring(1) : phone;
-
-  // Missing + and country code, 2223334444
-  if (phone.length === 10) {
-    return `+1${partial}`;
-  }
-
-  // If was already correct, just return the +
-  return `+${partial}`;
 };
