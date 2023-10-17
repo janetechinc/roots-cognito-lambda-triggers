@@ -35,14 +35,6 @@ const makeRequest = async (options) => {
 
   const url = new URL(options.path, apiUrl);
 
-  console.log("@@url: ", url)
-  console.log("@@request: ", {
-    url: url.toString(),
-    method: options.method || 'get',
-    headers: {...headers, 'Authorization': `Bearer ${options.token}`},
-    data: options.body
-  })
-
   try {
     const response = await request({
       validateStatus: validStatus,

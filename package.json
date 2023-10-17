@@ -33,7 +33,6 @@
     ]
   },
   "dependencies": {
-    "@aws-sdk/client-cognito-identity-provider": "^3.428.0",
     "axios": "^1.2.6"
   }
 }

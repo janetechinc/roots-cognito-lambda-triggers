@@ -60,20 +60,6 @@ export const handler = async (event) => {
     }
 
     if (userExists) {
-      // Caveat, flow is "wrong" because SSO is sinup/sign in is the same thing, so it calls signup when
-      // we actually want is signin
-
-      // Eg:
-      // Here we should check event.triggerSource === 'PreSignUp_ExternalProvider'
-      //  User should be confirmed (just like a migration)
-      //  No message to user since it already had an account before (just like a migration)
-      //  And move flow along to Post-Confirmation, where it can finish the migration
-      if (event.triggerSource === 'PreSignUp_ExternalProvider') {
-        event.response.autoConfirmUser = true
-        event.response.autoVerifyEmail = true
-
-        return event
-      }
       throw Error('User already exists, please log in')
     }
 
