@@ -127,12 +127,15 @@ const verifyCredentials = async (data, token) => {
 /** ----- GET SSO USER ATTRIBUTES ----- */
 
 const verifySSOUser = async (data, token) => {
+  console.log("token: ", token)
+  console.log("data: ", data)
   const response = await apiService.post(
     `${COGNITO_API}/verify_sso_user`,
     data,
     token
   )
 
+  console.log("response: ", response)
   const result = {
     errorMessage: "",
     user: response.body?.user,
