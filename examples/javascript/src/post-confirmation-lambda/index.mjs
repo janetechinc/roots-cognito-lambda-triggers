@@ -30,7 +30,7 @@ export const handler = async (event) => {
     return event;
   }
   
-  event = await handleUserMigration(event);
+  event = await handleUserMigration(event, token);
 
   const { success, errorMessage } = await Jane.createUser({
     pool_id: event.userPoolId,
@@ -51,7 +51,7 @@ export const handler = async (event) => {
   instead we handle those migrations here, after signup.
   If a user is signing up via sso, we check for a Jane SSO user
   associated with this client and use that users data for the migration */
-  const handleUserMigration = async (event) => {
+  const handleUserMigration = async (event, token) => {
     let userIdentities;
     try {
       userIdentities = JSON.parse(event.request.userAttributes.identities);
@@ -69,9 +69,9 @@ export const handler = async (event) => {
 
     const { errorMessage, user } = await Jane.verifySSOUser({
       email: event.request.userAttributes.email,
-      userAttributes: event.request.userAttributes,
-      appClientId: event.callerContext.clientId,
-    });
+      user_attributes: event.request.userAttributes,
+      app_client_id: event.callerContext.clientId,
+    }, token);
     if (errorMessage === "User not found") {
       // Jane user for this client was not found, continue normal sign up
       return event;
