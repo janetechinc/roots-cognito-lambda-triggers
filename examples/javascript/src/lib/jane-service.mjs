@@ -129,9 +129,16 @@ const verifyCredentials = async (data, token) => {
 const verifySSOUser = async (data, token) => {
   console.log("token: ", token)
   console.log("data: ", data)
+  const parsedData = {
+    ...data,
+    user_attributes: {
+    ...data.user_attributes,
+      identities: JSON.parse(data.user_attributes.identities)
+     }
+ }
   const response = await apiService.post(
     `${COGNITO_API}/verify_sso_user`,
-    data,
+    parsedData,
     token
   )
 
