@@ -44,3 +44,15 @@ export const mapUserAttributes = (userAttributes) => {
 
   return userData
 }
+
+export const addAreaCodeToPhone = (phone) => {
+  let partial = phone.startsWith("+") ? phone.substring(1) : phone
+
+  // Missing + and country code, 2223334444
+  if (phone.length === 10) {
+    return `+1${partial}`
+  }
+
+  // If was already correct, just return the +
+  return `+${partial}`
+}
