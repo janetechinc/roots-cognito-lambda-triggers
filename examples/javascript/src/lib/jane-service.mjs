@@ -124,6 +124,47 @@ const verifyCredentials = async (data, token) => {
   return result
 }
 
+/** ----- GET SSO USER ATTRIBUTES ----- */
+
+const verifySSOUser = async (data, token) => {
+  // user_attributes.identities is already a stringified object and
+  // unfortunately if you call JSON.stringify on it, the object breaks
+  // on the backend when it attempts to re-parse it.
+  // The solution here is to parse identities before stringifying it.
+  const parsedData = {
+    ...data,
+    user_attributes: {
+    ...data.user_attributes,
+      identities: JSON.parse(data.user_attributes.identities)
+     }
+ }
+  const response = await apiService.post(
+    `${COGNITO_API}/verify_sso_user`,
+    parsedData,
+    token
+  )
+  
+  const result = {
+    errorMessage: "",
+    user: response.body?.user,
+  }
+
+  switch (response.statusCode) {
+    case 200:
+      break
+    case 404:
+      result.errorMessage = "User not found"
+      break
+    default:
+      result.errorMessage = buildErrorMessage(
+        "Error verifying SSO user",
+        response
+      )
+  }
+
+  return result
+}
+
 /** ----- VALIDATE USER ----- */
 
 
@@ -171,5 +212,6 @@ export default {
   userExists,
   ensureExternalUserExists,
   verifyCredentials,
+  verifySSOUser,
   validateUser
 }
