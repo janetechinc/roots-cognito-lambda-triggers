@@ -1,6 +1,10 @@
 import { addAreaCodeToPhone, mapUserAttributes } from '../lib/utils.mjs';
 import Jane from '../lib/jane-service.mjs';
 import apiService from '../lib/api-service.mjs';
+import {
+  AdminUpdateUserAttributesCommand,
+  CognitoIdentityProviderClient,
+} from "@aws-sdk/client-cognito-identity-provider";
 
 /**
  * Possible trigger sources:
