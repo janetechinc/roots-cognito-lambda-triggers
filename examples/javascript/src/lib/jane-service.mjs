@@ -32,8 +32,8 @@ const createUser = async (data, token) => {
 //   }
 // }
 
-const ensureExternalUserExists = async (data) => {
-  const response = await apiService.post(`${COGNITO_API}/ensure_external_user_exists`, data)
+const ensureExternalUserExists = async (data, token) => {
+  const response = await apiService.post(`${COGNITO_API}/ensure_external_user_exists`, data, token)
 
   return {
     success: response.statusCode === 200,
@@ -134,16 +134,16 @@ const verifySSOUser = async (data, token) => {
   const parsedData = {
     ...data,
     user_attributes: {
-    ...data.user_attributes,
+      ...data.user_attributes,
       identities: JSON.parse(data.user_attributes.identities)
-     }
- }
+    }
+  }
   const response = await apiService.post(
     `${COGNITO_API}/verify_sso_user`,
     parsedData,
     token
   )
-  
+
   const result = {
     errorMessage: "",
     user: response.body?.user,

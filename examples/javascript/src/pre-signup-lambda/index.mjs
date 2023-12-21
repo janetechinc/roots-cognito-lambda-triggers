@@ -26,7 +26,7 @@ export const handler = async (event) => {
       external_id: event.userName,
       email: userData.email,
       user_attributes: userData.user_attributes,
-    })
+    }, token)
 
     if (!success) {
       throw new Error(`ensureExternalUserExists was not successful: ${errorMessage}`)
