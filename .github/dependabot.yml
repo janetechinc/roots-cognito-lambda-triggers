@@ -1,0 +1,13 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: "monday"
+      timezone: "America/Los_Angeles"
+      time: "09:00"
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: "chore(ci)"
