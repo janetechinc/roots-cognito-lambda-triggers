@@ -1,0 +1,96 @@
+name: Setup Node
+description: >-
+  Node + Aikido safe-chain + a guarded install from the lockfile.
+
+  This mirrors janetechinc/shared-actions/setup-node. It is duplicated here rather than consumed
+  because shared-actions is private and this repository is public, so a workflow here cannot
+  resolve an action from it. If shared-actions is ever made public, delete this directory and
+  point both workflows back at the shared action.
+
+inputs:
+  node-version:
+    description: Node version passed to actions/setup-node.
+    required: false
+    default: lts/*
+  safe-chain-version:
+    description: Version of safe-chain to install.
+    required: false
+    default: "1.5.15"
+  safe-chain-sha256:
+    description: >-
+      sha256 of install-safe-chain.sh for safe-chain-version. Leave empty for versions this action
+      already knows.
+    required: false
+    default: ""
+  npm-version:
+    description: npm version to install globally. Empty keeps the version bundled with Node.
+    required: false
+    default: "11.18.0"
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: npm
+
+    - name: Restore safe-chain cache
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: ~/.safe-chain
+        key: safe-chain-${{ runner.os }}-${{ inputs.safe-chain-version }}
+
+    # The installer is a shell script served over HTTPS. Aikido publishes no signed artifact, so
+    # verifying the sha256 is what stops a compromised release from executing in a job that holds a
+    # write-scoped GITHUB_TOKEN. Checksums are per-version and fail closed for unknown versions.
+    - name: Install safe-chain
+      shell: bash
+      env:
+        SAFE_CHAIN_VERSION: ${{ inputs.safe-chain-version }}
+        SAFE_CHAIN_SHA256: ${{ inputs.safe-chain-sha256 }}
+      run: |
+        set -euo pipefail
+        expected="$SAFE_CHAIN_SHA256"
+        if [ -z "$expected" ]; then
+          case "$SAFE_CHAIN_VERSION" in
+            1.4.7)  expected=54c750232d149106ecf4f5f28fee82ba49d2428f1e411e0ed961c0263ae19eaf ;;
+            1.5.14) expected=d41816ab564e9b9238946786433eec15e2d0e699698fa81c1fd1bdd3a78adf5c ;;
+            1.5.15) expected=de0565e3d6346407a604e84e639e95fea8758748063da2216bbfdca5feda5dd2 ;;
+            *)
+              echo "::error::No known sha256 for safe-chain ${SAFE_CHAIN_VERSION}. Pass safe-chain-sha256, or add it here."
+              exit 1
+              ;;
+          esac
+        fi
+
+        if [ -x "$HOME/.safe-chain/bin/safe-chain" ]; then
+          echo "safe-chain ${SAFE_CHAIN_VERSION} restored from cache"
+          exit 0
+        fi
+
+        curl -fsSL "https://github.com/AikidoSec/safe-chain/releases/download/${SAFE_CHAIN_VERSION}/install-safe-chain.sh" -o /tmp/install-safe-chain.sh
+        echo "${expected}  /tmp/install-safe-chain.sh" | sha256sum -c -
+        sh /tmp/install-safe-chain.sh --ci
+        rm -f /tmp/install-safe-chain.sh
+
+    # Separate step: GITHUB_PATH only takes effect from the next step onward.
+    - name: Put safe-chain shims on PATH
+      shell: bash
+      run: |
+        echo "$HOME/.safe-chain/shims" >>"$GITHUB_PATH"
+        echo "$HOME/.safe-chain/bin" >>"$GITHUB_PATH"
+
+    # A half-installed shim is otherwise indistinguishable from a clean scan.
+    - name: Verify safe-chain
+      shell: bash
+      run: npm safe-chain-verify
+
+    - name: Install npm
+      if: inputs.npm-version != ''
+      shell: bash
+      run: npm i -g npm@${{ inputs.npm-version }}
+
+    - name: Install dependencies
+      shell: bash
+      run: npm ci --ignore-scripts
